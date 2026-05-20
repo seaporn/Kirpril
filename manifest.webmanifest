@@ -1,0 +1,14 @@
+{
+  "name": "Мои смены",
+  "short_name": "Смены",
+  "description": "Учет смен, графика и зарплаты.",
+  "id": "./",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#1c0b27",
+  "theme_color": "#341347",
+  "lang": "ru",
+  "categories": ["productivity", "finance"]
+}

@@ -113,6 +113,18 @@ h1, h2, h3, p { margin: 0; }
   text-transform: uppercase;
   text-shadow: 0 2px 12px rgba(0,0,0,.26);
 }
+/* Версия приложения рядом с заголовком */
+.topbar b::after {
+  content: "v1.0";
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--muted);
+  margin-left: 8px;
+  letter-spacing: .03em;
+  text-transform: none;
+  vertical-align: middle;
+}
 .topbar span {
   display: block;
   margin-top: 3px;
@@ -563,35 +575,70 @@ main { display: grid; gap: 14px; }
 }
 .time-fields {
   width: 100%;
+  max-width: 100%;
+  min-width: 0;
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 8px;
+  gap: 10px;
 }
+
 .time-field {
+  width: 100%;
   min-width: 0;
-  height: 78px;
-  padding: 9px;
-  border-radius: 18px;
-  background: rgba(255,255,255,.08);
-  border: 1px solid var(--line);
+  height: 80px;
+  padding: 8px;
+  border-radius: 16px;
+  /* делаем фон тёмным и нейтральным, чтобы поля не были ярко белыми */
+  background: rgba(28,10,38,0.56);
+  border: 1px solid rgba(255,255,255,.06);
   display: grid;
-  grid-template-rows: auto 38px;
+  grid-template-rows: 16px 36px;
   gap: 6px;
   color: var(--muted);
   font-size: 12px;
   font-weight: 900;
   text-align: center;
 }
-.time-field input {
+
+.time-field input,
+input[type="time"] {
+  display: block;
+  box-sizing: border-box;
   width: 100%;
-  height: 38px;
-  min-height: 38px;
-  padding: 0 6px;
+  max-width: 100%;
+  height: 42px;
+  min-height: 42px;
+  padding: 0 10px;
   text-align: center;
   font-size: 16px;
   font-weight: 900;
-  border-radius: 13px;
-  background: rgba(20, 7, 30, .72);
+  border-radius: 14px;
+  /* match global input style */
+  background: rgba(28, 10, 38, .72);
+  color: var(--ink);
+  border: 1px solid var(--line);
+  box-shadow: 0 1px 0 rgba(255,255,255,.08) inset;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+
+/* Ensure consistent look for time inputs in compact grids */
+.time-grid input,
+.time-grid.compact input {
+  background: rgba(28, 10, 38, .72);
+  color: var(--ink);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  height: 42px;
+  padding: 0 10px;
+  box-shadow: 0 1px 0 rgba(255,255,255,.08) inset;
+}
+
+input[type="time"]::-webkit-inner-spin-button,
+input[type="time"]::-webkit-calendar-picker-indicator {
+  appearance: none;
+  -webkit-appearance: none;
 }
 .preview-box {
   padding: 14px;

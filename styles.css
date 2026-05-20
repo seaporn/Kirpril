@@ -613,6 +613,7 @@ input[type="time"] {
   line-height: 42px;
   padding: 0 10px;
   text-align: center;
+  font-family: inherit;
   font-size: 16px;
   font-weight: 900;
   border-radius: 14px;
@@ -623,6 +624,26 @@ input[type="time"] {
   appearance: none;
   -webkit-appearance: none;
   -moz-appearance: none;
+}
+
+.time-field input[type="time"]::-webkit-datetime-edit,
+.time-field input[type="time"]::-webkit-datetime-edit-fields-wrapper,
+.time-field input[type="time"]::-webkit-datetime-edit-text,
+.time-field input[type="time"]::-webkit-date-and-time-value {
+  line-height: 42px;
+  height: 42px;
+  margin: 0;
+  padding: 0;
+  text-align: center;
+}
+
+.time-field input[type="time"]::-webkit-clear-button,
+.time-field input[type="time"]::-webkit-inner-spin-button,
+.time-field input[type="time"]::-webkit-calendar-picker-indicator {
+  appearance: none;
+  -webkit-appearance: none;
+  margin: 0;
+  padding: 0;
 }
 
 /* Ensure consistent look for time inputs in compact grids */

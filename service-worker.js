@@ -1,7 +1,7 @@
 'use strict';
 
 // Service Worker для GitHub Pages: быстрый старт офлайн и обновление файлов без старого мусора.
-const CACHE_NAME = 'moi-smeny-v4';
+const CACHE_NAME = 'moi-smeny-v5';
 const APP_FILES = [
   './',
   './index.html',

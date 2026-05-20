@@ -1,4 +1,4 @@
-const CACHE_NAME = 'shift-salary-manual-v8';
+﻿const CACHE_NAME = 'shift-salary-purple-v9';
 const FILES = ['./', './index.html', './styles.css', './app.js', './manifest.webmanifest', './service-worker.js'];
 
 self.addEventListener('install', event => {

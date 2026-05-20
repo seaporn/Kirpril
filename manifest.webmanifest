@@ -1,9 +1,9 @@
-{
+﻿{
   "name": "Мои смены",
   "short_name": "Смены",
   "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#eef6f7",
-  "theme_color": "#111827",
+  "background_color": "#1c0b27",
+  "theme_color": "#341347",
   "lang": "ru"
 }

@@ -232,7 +232,12 @@ function planTotals(year = viewYear, month = viewMonth) {
 function render() {
   renderToday();
   renderSummary();
-  renderCalendar();
+  renderCalendar(const actual = sumEntries(entriesForMonth(state.shifts));
+const plannedCount = entriesForMonth(state.planned).length;
+const todayKey = toDateKey(new Date());
+
+els.monthTitle.textContent = capitalize(firstDay.toLocaleDateString('ru-RU', { month: 'long', year: 'numeric' }));
+els.monthSubtitle.textContent = plannedCount ? `${actual.count} записано · ${plannedCount} по графику` : `${actual.count} записано`;);
 }
 
 function renderToday() {

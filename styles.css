@@ -363,19 +363,7 @@ main { display: grid; gap: 14px; }
   box-shadow: 0 10px 20px rgba(255, 208, 92, .16);
 }
 .calendar-actions button:last-child { color: #ffd6dc; }
-.legend {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin: 0 0 11px;
-  color: var(--muted);
-  font-size: 11px;
-  line-height: 1;
-}
-.legend span { display: inline-flex; align-items: center; gap: 5px; }
-.dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; box-shadow: 0 0 14px currentColor; }
-.dot.planned { background: var(--blue); color: var(--blue); }
-.dot.done { background: var(--teal); color: var(--teal); }
+
 .weekdays, .calendar-grid {
   width: 100%;
   display: grid;

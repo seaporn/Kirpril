@@ -146,6 +146,14 @@ function formatMoney(value) {
   return `${Math.round(value).toLocaleString('ru-RU')} ₽`;
 }
 
+function formatMoneyShort(value) {
+  const rounded = Math.round(value);
+  if (!Number.isFinite(rounded) || rounded <= 0) return '';
+  if (rounded >= 1000000) return `${String(Math.round(rounded / 100000) / 10).replace('.', ',')}м`;
+  if (rounded >= 10000) return `${Math.round(rounded / 1000)}к`;
+  return `${rounded.toLocaleString('ru-RU')}₽`;
+}
+
 function formatHours(value) {
   if (!Number.isFinite(value) || value <= 0) return '0';
   const rounded = Math.round(value * 10) / 10;
@@ -317,9 +325,11 @@ function renderCalendar() {
     const isWeekend = weekday === 0 || weekday === 6;
     btn.className = `day${isWeekend ? ' weekend' : ''}${planned ? ' planned' : ''}${shift ? ' done' : ''}${key === todayKey ? ' today' : ''}`;
     btn.setAttribute('aria-label', `${day} ${shift ? 'записано' : planned ? 'по графику' : 'нет смены'}`);
+    const earned = shift ? calcShift(shift).salary : planned ? calcShift(planned).salary : 0;
+    const moneyText = shift ? formatMoneyShort(earned) : planned ? 'план' : '';
     btn.innerHTML = `
       <b>${day}</b>
-      <span class="day-mark" aria-hidden="true"></span>
+      <span class="day-money${moneyText ? '' : ' empty-money'}">${moneyText || '0'}</span>
     `;
     btn.addEventListener('click', () => openWorkDialog(key));
     els.calendarGrid.appendChild(btn);

@@ -19,6 +19,7 @@ const els = {
   monthTitle: document.getElementById('monthTitle'),
   monthSubtitle: document.getElementById('monthSubtitle'),
   calendarGrid: document.getElementById('calendarGrid'),
+  monthList: document.getElementById('monthList'),
   prevMonthBtn: document.getElementById('prevMonthBtn'),
   nextMonthBtn: document.getElementById('nextMonthBtn'),
   todayBtn: document.getElementById('todayBtn'),
@@ -296,6 +297,7 @@ function renderCalendar() {
   els.monthTitle.textContent = monthName[0].toUpperCase() + monthName.slice(1);
   els.monthSubtitle.textContent = plannedCount ? `${actual.count} записано · ${plannedCount} по графику` : `${actual.count} записано`;
   els.calendarGrid.innerHTML = '';
+  els.monthList.innerHTML = '';
 
   const firstWeekday = (firstDay.getDay() + 6) % 7;
   for (let i = 0; i < firstWeekday; i++) {
@@ -309,34 +311,57 @@ function renderCalendar() {
     const key = `${viewYear}-${String(viewMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
     const shift = state.shifts[key];
     const planned = state.planned[key];
-    const calc = calcShift(shift);
-    const planCalc = calcShift(planned);
     const btn = document.createElement('button');
     btn.type = 'button';
     const weekday = new Date(viewYear, viewMonth, day).getDay();
     const isWeekend = weekday === 0 || weekday === 6;
     btn.className = `day${isWeekend ? ' weekend' : ''}${planned ? ' planned' : ''}${shift ? ' done' : ''}${key === todayKey ? ' today' : ''}`;
-
-    let label = '+';
-    let line = '';
-    let sum = '+';
-    if (shift) {
-      label = `${shift.start}–${shift.end}`;
-      line = formatMoney(calc.salary);
-      sum = 'записано';
-    } else if (planned) {
-      label = `${planned.start}–${planned.end}`;
-      line = formatMoney(planCalc.salary);
-      sum = 'график';
-    }
-
+    btn.setAttribute('aria-label', `${day} ${shift ? 'записано' : planned ? 'по графику' : 'нет смены'}`);
     btn.innerHTML = `
       <b>${day}</b>
-      <small>${label}</small>
-      <span class="sum">${shift || planned ? line : sum}</span>
+      <span class="day-mark" aria-hidden="true"></span>
     `;
     btn.addEventListener('click', () => openWorkDialog(key));
     els.calendarGrid.appendChild(btn);
+  }
+
+  renderMonthList();
+}
+
+function renderMonthList() {
+  const dates = new Set([
+    ...entriesForMonth(state.planned).map(([date]) => date),
+    ...entriesForMonth(state.shifts).map(([date]) => date)
+  ]);
+  const sorted = [...dates].sort();
+
+  if (!sorted.length) {
+    const empty = document.createElement('div');
+    empty.className = 'month-empty';
+    empty.textContent = 'Пока нет смен за этот месяц.';
+    els.monthList.appendChild(empty);
+    return;
+  }
+
+  for (const date of sorted) {
+    const shift = state.shifts[date];
+    const planned = state.planned[date];
+    const itemShift = shift || planned;
+    const calc = calcShift(itemShift);
+    const dateObj = parseDateKey(date);
+    const day = dateObj.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' });
+    const weekday = dateObj.toLocaleDateString('ru-RU', { weekday: 'short' }).replace('.', '');
+
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = `shift-row ${shift ? 'done' : 'planned'}`;
+    btn.innerHTML = `
+      <span class="shift-date"><b>${day}</b><small>${weekday}</small></span>
+      <span class="shift-time">${itemShift.start}–${itemShift.end}</span>
+      <span class="shift-money">${formatMoney(calc.salary)}</span>
+    `;
+    btn.addEventListener('click', () => openWorkDialog(date));
+    els.monthList.appendChild(btn);
   }
 }
 
@@ -345,10 +370,10 @@ function openWorkDialog(dateKey) {
   const shift = state.shifts[dateKey];
   const planned = state.planned[dateKey];
   const todayKey = toDateKey(new Date());
-  const defaultEnd = dateKey === todayKey ? nowTime() : (planned?.end || '');
+  const defaultEnd = dateKey === todayKey ? nowTime() : (planned?.end || nowTime());
 
   els.dialogDate.textContent = formatDate(dateKey);
-  els.actualStart.value = shift?.start || planned?.start || DEFAULT_START;
+  els.actualStart.value = shift?.start || DEFAULT_START;
   els.actualEnd.value = shift?.end || defaultEnd;
   els.rateInput.value = Number(shift?.rate || planned?.rate || state.settings.rate || DEFAULT_RATE);
   els.deleteShiftBtn.hidden = !shift;
@@ -367,8 +392,8 @@ function openWorkDialog(dateKey) {
 
 function showDialog(dialog) {
   document.body.classList.add('dialog-open');
-  if (typeof dialog.showModal === 'function') dialog.showModal();
-  else dialog.setAttribute('open', '');
+  dialog.hidden = false;
+  dialog.setAttribute('open', '');
   requestAnimationFrame(() => {
     if (document.activeElement && typeof document.activeElement.blur === 'function') {
       document.activeElement.blur();
@@ -377,9 +402,11 @@ function showDialog(dialog) {
 }
 
 function closeDialog(dialog) {
-  if (typeof dialog.close === 'function') dialog.close();
-  else dialog.removeAttribute('open');
-  document.body.classList.remove('dialog-open');
+  dialog.hidden = true;
+  dialog.removeAttribute('open');
+  if (!els.workDialog.hasAttribute('open') && !els.settingsDialog.hasAttribute('open')) {
+    document.body.classList.remove('dialog-open');
+  }
 }
 
 function closeDialogOnBackdrop(event, dialog) {
@@ -853,6 +880,11 @@ els.clearAllBtn.addEventListener('click', clearAll);
 els.exportBtn.addEventListener('click', exportBackup);
 els.backupInput.addEventListener('change', event => importBackup(event.target.files?.[0]));
 els.scheduleInput.addEventListener('change', event => importScheduleFile(event.target.files?.[0]));
+document.addEventListener('keydown', event => {
+  if (event.key !== 'Escape') return;
+  if (els.workDialog.hasAttribute('open')) closeDialog(els.workDialog);
+  if (els.settingsDialog.hasAttribute('open')) closeDialog(els.settingsDialog);
+});
 
 setInterval(renderToday, 60 * 1000);
 render();
